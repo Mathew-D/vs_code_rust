@@ -1,0 +1,49 @@
+{
+    "name": "dusome-rust",
+    "displayName": "Dusome Rust",
+    "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
+    "version": "1.1.6",
+    "publisher": "Dusome",
+    
+    "engines": {
+        "vscode": "^1.50.0"
+    },
+    "activationEvents": [
+        "onCommand:extension.generateRustStructure"
+    ],
+    "main": "extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.generateRustStructure",
+                "title": "Generate Rust Structure"
+            }
+        ],
+        "menus": {
+            "explorer/context": [
+                {
+                    "command": "extension.generateRustStructure",
+                    "when": "explorerResourceIsFolder",
+                    "group": "navigation"
+                }
+            ]
+        }
+    },
+    "files": [
+    "extension.js"
+],
+    "scripts": {
+    "package": "vsce package",
+    "test": "echo \"Error: no test specified\" && exit 1"
+},
+    "repository": {
+    "type": "git",
+    "url": "https://github.com/Mathew-D/vs_code_rust"
+  },
+    "keywords": ["vscode", "extension","rust","macroquad"],
+    "author": "Mathew Dusome",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/node": "^22.5.4"
+    }
+}
