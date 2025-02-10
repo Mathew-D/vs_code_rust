@@ -2,27 +2,50 @@
     "name": "dusome-rust",
     "displayName": "Dusome Rust",
     "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
-    "version": "1.1.6",
+    "version": "3.1.0",
     "publisher": "Dusome",
-    
     "engines": {
         "vscode": "^1.50.0"
     },
     "activationEvents": [
-        "onCommand:extension.generateRustStructure"
+        "onStartupFinished",
+        "onCommand:extension.showRustMenu"
     ],
     "main": "extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "extension.generateRustStructure",
-                "title": "Generate Rust Structure"
+                "command": "extension.showRustMenu",
+                "title": "Rust: Show Menu"
+            },
+            {
+                "command": "extension.createRustProject",
+                "title": "Rust: Create Project"
+            },
+            {
+                "command": "extension.disposableButtons",
+                "title": "Rust: Add Button Object From The Web"
+            },
+            {
+                "command": "extension.disposableTextInput",
+                "title": "Rust: Add Text Input Object From The Web"
+            },
+            {
+                "command": "extension.addWebSupport",
+                "title": "Rust: Add Web Support"
             }
         ],
         "menus": {
+            "commandPalette": [
+                {
+                    "command": "extension.showRustMenu",
+                    "category": "Rust",
+                    "title": "Show Rust Menu"
+                }
+            ],
             "explorer/context": [
                 {
-                    "command": "extension.generateRustStructure",
+                    "command": "extension.createRustProject",
                     "when": "explorerResourceIsFolder",
                     "group": "navigation"
                 }
@@ -30,17 +53,17 @@
         }
     },
     "files": [
-    "extension.js"
-],
+        "extension.js"
+    ],
     "scripts": {
-    "package": "vsce package",
-    "test": "echo \"Error: no test specified\" && exit 1"
-},
+        "package": "vsce package",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
     "repository": {
-    "type": "git",
-    "url": "https://github.com/Mathew-D/vs_code_rust"
-  },
-    "keywords": ["vscode", "extension","rust","macroquad"],
+        "type": "git",
+        "url": "https://github.com/Mathew-D/vs_code_rust"
+    },
+    "keywords": ["vscode", "extension", "rust", "macroquad"],
     "author": "Mathew Dusome",
     "license": "MIT",
     "devDependencies": {
