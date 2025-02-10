@@ -11,24 +11,27 @@ function activate(context) {
     rustStatusBarItem.command = "extension.showRustMenu"; // Command triggered when clicked
     rustStatusBarItem.show(); // Display the button in the Status Bar
    
+
     // Add it to context so it's disposed properly
-  //  context.subscriptions.push(rustStatusBarItem);
+    //  context.subscriptions.push(rustStatusBarItem);
 
     // Register the "Show Rust Menu" command
     let disposableShowMenu = vscode.commands.registerCommand('extension.showRustMenu', async () => {
         const options = [
             { label: 'Create Rust Project', command: 'extension.createRustProject' },
+            { label: 'Run Program', command: 'extension.disposableCargoRun' },
             { label: 'Add Button Object From The Web', command: 'extension.addButtonSupport' },
             { label: 'Add Text Input Object From The Web', command: 'extension.addTextInputSupport' },
             { label: 'Add Web Support', command: 'extension.addWebSupport' },
+            { label: 'Web Output', command: 'extension.disposableWebOut' },
+            { label: 'Run Web Server', command: 'extension.disposableWebRun' },
         ];
-
         const selected = await vscode.window.showQuickPick(options, { placeHolder: 'Choose an option' });
 
         if (selected) {
             vscode.commands.executeCommand(selected.command);
         }
-   //     context.subscriptions.push(disposableShowMenu);
+        //     context.subscriptions.push(disposableShowMenu);
     });
 
     // Register the "Create Rust Project" command
@@ -42,31 +45,27 @@ function activate(context) {
         }
         const date = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
 
-        // ✅ Run `cargo init` first
-        exec('cargo init', { cwd: folderPath }, (error, stdout, stderr) => {
-            if (error) {
-                vscode.window.showErrorMessage(`Error initializing Cargo: ${stderr}`);
-                return;
-            }
-        });
+        let terminal = vscode.window.createTerminal("Cargo Terminal");
+        terminal.show();
+    
+        let runCommand = (command) => {
+            terminal.sendText(command);
+        };
+
+        runCommand("cargo init");
+
+        runCommand("cargo add macroquad");
 
 
-        // ✅ Run `cargo add macroquad` next
-        exec('cargo add macroquad', { cwd: folderPath }, (error, stdout, stderr) => {
-            if (error) {
-                vscode.window.showErrorMessage(`Error adding macroquad: ${stderr}`);
-                return;
-            }
-        });
      //   vscode.window.showInformationMessage(`Project initialized in ${folderPath}!`);
-        const srcFolder = path.join(folderPath, 'src');
-if (!fs.existsSync(srcFolder)) {
-    fs.mkdirSync(srcFolder, { recursive: true });
-}
+    const srcFolder = path.join(folderPath, 'src');
+    if (!fs.existsSync(srcFolder)) {
+        fs.mkdirSync(srcFolder, { recursive: true });
+    }
 
-        const lastFolderName = path.basename(folderPath);
-        const mainRsPath = path.join(folderPath, 'src', 'main.rs');
-        const mainRsContent = `/*
+    const lastFolderName = path.basename(folderPath);
+    const mainRsPath = path.join(folderPath, 'src', 'main.rs');
+    const mainRsContent = `/*
 By: <Your Name Here>
 Date: ${date}
 Program Details: <Program Description Here>
@@ -87,23 +86,23 @@ async fn main() {
     }
 }
 `;
-        fs.writeFileSync(mainRsPath, mainRsContent);    
-        vscode.window.showInformationMessage(`Creating Rust Project in: ${folderPath}`);
-        // You can add your logic to run cargo init here
-    });
+    fs.writeFileSync(mainRsPath, mainRsContent);
+    vscode.window.showInformationMessage(`Creating Rust Project in: ${folderPath}`);
+    // You can add your logic to run cargo init here
+});
 
-    // Register the "Add Web Support" command
-    let disposableAddWebSupport = vscode.commands.registerCommand('extension.addWebSupport', async () => {
-        // Get the folder path from the active workspace or open file
-        const folderPath = await getFolderPath();
+// Register the "Add Web Support" command
+let disposableAddWebSupport = vscode.commands.registerCommand('extension.addWebSupport', async () => {
+    // Get the folder path from the active workspace or open file
+    const folderPath = await getFolderPath();
 
-        if (!folderPath) {
-            vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
-            return;
-        }
-        const lastFolderName = path.basename(folderPath);
-       
-        const indexHtmlContent = `
+    if (!folderPath) {
+        vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
+        return;
+    }
+    const lastFolderName = path.basename(folderPath);
+
+    const indexHtmlContent = `
         <html lang="en">
         <head>
             <meta charset="utf-8">
@@ -121,34 +120,97 @@ async fn main() {
         </html>
         `;
 
-        fs.writeFileSync(path.join(folderPath, 'index.html'), indexHtmlContent);
-        vscode.window.showInformationMessage(`Adding Web Support in: ${folderPath}`);
-    });
+    fs.writeFileSync(path.join(folderPath, 'index.html'), indexHtmlContent);
+    vscode.window.showInformationMessage(`Adding Web Support in: ${folderPath}`);
+});
 
 
-    let disposableButtons = vscode.commands.registerCommand('extension.addButtonSupport', async () => {
-        const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/buttons.rs';
-       
-        await downloadToFolder('objects', 'buttons.rs', url);
-        vscode.window.showInformationMessage(`Adding Button Object in: ${folderPath}`);
-    });
+let disposableButtons = vscode.commands.registerCommand('extension.addButtonSupport', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/buttons.rs';
+
+    await downloadToFolder('objects', 'buttons.rs', url);
+    vscode.window.showInformationMessage(`Adding Button Object in: ${folderPath}`);
+});
 
 
-    let disposableTextInput = vscode.commands.registerCommand('extension.addTextInputSupport', async () => {
-        const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/inputs.rs';
-    
-        await downloadToFolder('objects', 'textInput.rs', url);
-        vscode.window.showInformationMessage(`Adding Text Input Object in: ${folderPath}`);
-    });
+let disposableWebOut = vscode.commands.registerCommand('extension.disposableWebOut', async () => {
 
-    // Add commands to the context subscriptions
-    context.subscriptions.push(
-        disposableShowMenu,
-        disposableCreateRust,
-        disposableAddWebSupport,
-        disposableTextInput,
-        disposableButtons
-    );
+    const folderPath = await getFolderPath();
+
+    if (!folderPath) {
+        vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
+        return;
+    }
+    let terminal = vscode.window.createTerminal("Cargo Terminal");
+    terminal.show();
+
+    let runCommand = (command) => {
+        terminal.sendText(command);
+    };
+
+    runCommand("cargo build --release --target wasm32-unknown-unknown");
+  
+    vscode.window.showInformationMessage(`Web Output Built.`);
+});
+
+
+
+let disposableCargoRun = vscode.commands.registerCommand('extension.disposableCargoRun', async () => {
+
+    const folderPath = await getFolderPath();
+
+    if (!folderPath) {
+        vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
+        return;
+    }
+    let terminal = vscode.window.createTerminal("Cargo Terminal");
+    terminal.show();
+
+    let runCommand = (command) => {
+        terminal.sendText(command);
+    };
+
+    runCommand("cargo run");
+  
+    vscode.window.showInformationMessage(`Web Output Built.`);
+});
+let disposableWebRun = vscode.commands.registerCommand('extension.disposableWebRun', async () => {
+
+    const folderPath = await getFolderPath();
+
+    if (!folderPath) {
+        vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
+        return;
+    }
+    let terminal = vscode.window.createTerminal("Cargo Terminal");
+    terminal.show();
+
+    let runCommand = (command) => {
+        terminal.sendText(command);
+    };
+
+    runCommand("python3 -m http.server 8080 --bind 127.0.0.1");
+  
+    vscode.window.showInformationMessage(`Web Output Built.`);
+});
+let disposableTextInput = vscode.commands.registerCommand('extension.addTextInputSupport', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/inputs.rs';
+
+    await downloadToFolder('objects', 'textInput.rs', url);
+    vscode.window.showInformationMessage(`Adding Text Input Object in: ${folderPath}`);
+});
+
+// Add commands to the context subscriptions
+context.subscriptions.push(
+    disposableShowMenu,
+    disposableCreateRust,
+    disposableAddWebSupport,
+    disposableTextInput,
+    disposableButtons,
+    disposableWebOut,
+    disposableWebRun,
+    disposableCargoRun
+);
 }
 
 // Function to get the folder path (from workspace or active file)

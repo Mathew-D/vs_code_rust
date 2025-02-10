@@ -2,7 +2,7 @@
     "name": "dusome-rust",
     "displayName": "Dusome Rust",
     "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
-    "version": "3.1.0",
+    "version": "3.3.0",
     "publisher": "Dusome",
     "engines": {
         "vscode": "^1.50.0"
@@ -29,6 +29,18 @@
             {
                 "command": "extension.disposableTextInput",
                 "title": "Rust: Add Text Input Object From The Web"
+            },
+            {
+                "command": "extension.disposableWebOut",
+                "title": "Rust: Build Web Output"
+            },
+            {
+                "command": "extension.disposableWebRun",
+                "title": "Rust: Run Web Server"
+            },
+            {
+                "command": "extension.disposableCargoRun",
+                "title": "Rust: Run Program"
             },
             {
                 "command": "extension.addWebSupport",
