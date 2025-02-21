@@ -2,14 +2,13 @@
     "name": "dusome-rust",
     "displayName": "Dusome Rust",
     "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
-    "version": "3.3.0",
+    "version": "3.5.2",
     "publisher": "Dusome",
     "engines": {
         "vscode": "^1.50.0"
     },
     "activationEvents": [
-        "onStartupFinished",
-        "onCommand:extension.showRustMenu"
+        "onStartupFinished"
     ],
     "main": "extension.js",
     "contributes": {
@@ -24,7 +23,19 @@
             },
             {
                 "command": "extension.disposableButtons",
-                "title": "Rust: Add Button Object From The Web"
+                "title": "Rust: Add Text Button Object From The Web"
+            },
+            {
+                "command": "extension.disposableImgButton",
+                "title": "Rust: Add Image Button Object From The Web"
+            },
+            {
+                "command": "extension.disposableGrid",
+                "title": "Rust: Add Grid Object From The Web"
+            },
+            {
+                "command": "extension.disposableaddImage",
+                "title": "Rust: Add Image Object From The Web"
             },
             {
                 "command": "extension.disposableTextInput",
@@ -43,23 +54,43 @@
                 "title": "Rust: Run Program"
             },
             {
+                "command": "extension.disposableaddCollsion",
+                "title": "Rust: Collision Object"
+            },
+
+            {
                 "command": "extension.addWebSupport",
                 "title": "Rust: Add Web Support"
             }
         ],
         "menus": {
-            "commandPalette": [
-                {
-                    "command": "extension.showRustMenu",
-                    "category": "Rust",
-                    "title": "Show Rust Menu"
-                }
-            ],
             "explorer/context": [
                 {
                     "command": "extension.createRustProject",
                     "when": "explorerResourceIsFolder",
                     "group": "navigation"
+                }
+            ],
+            "editor/title": [
+                {
+                    "command": "extension.showRustMenu",
+                    "group": "navigation",
+                    "title": "$(list-selection) Rust Actions",
+                    "tooltip": "Open Rust Actions Menu"
+                }
+            ],
+            "editor/context": [
+                {
+                    "command": "extension.disposableCargoRun",
+                    "category": "Rust",
+                    "title": "Rust: Run Program",
+                    "group": "navigation"
+                },
+                {
+                    "command": "extension.showRustMenu",
+                    "when": "resourceLangId == rust",
+                    "group": "navigation",
+                    "title": "Rust Actions"
                 }
             ]
         }
@@ -75,7 +106,12 @@
         "type": "git",
         "url": "https://github.com/Mathew-D/vs_code_rust"
     },
-    "keywords": ["vscode", "extension", "rust", "macroquad"],
+    "keywords": [
+        "vscode",
+        "extension",
+        "rust",
+        "macroquad"
+    ],
     "author": "Mathew Dusome",
     "license": "MIT",
     "devDependencies": {

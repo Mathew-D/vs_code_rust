@@ -7,9 +7,9 @@ const https = require('https');
 function activate(context) {
     // Create Status Bar item
     const rustStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 250);
-    rustStatusBarItem.text = "Rust: Menu"; // Label on the Status Bar
-    rustStatusBarItem.command = "extension.showRustMenu"; // Command triggered when clicked
-    rustStatusBarItem.show(); // Display the button in the Status Bar
+   // rustStatusBarItem.text = "Rust: Menu"; // Label on the Status Bar
+   // rustStatusBarItem.command = "extension.showRustMenu"; // Command triggered when clicked
+  //  rustStatusBarItem.show(); // Display the button in the Status Bar
    
 
     // Add it to context so it's disposed properly
@@ -20,14 +20,18 @@ function activate(context) {
         const options = [
             { label: 'Create Rust Project', command: 'extension.createRustProject' },
             { label: 'Run Program', command: 'extension.disposableCargoRun' },
-            { label: 'Add Button Object From The Web', command: 'extension.addButtonSupport' },
+            { label: 'Add Grid Object From The Web', command: 'extension.addGridSupport' },
+            { label: 'Add Image Object From The Web', command: 'extension.addImageSupport' },
+            { label: 'Add Text Button Object From The Web', command: 'extension.addButtonSupport' },
+            { label: 'Add Image Button Object From The Web', command: 'extension.disposableImgButton' },
             { label: 'Add Text Input Object From The Web', command: 'extension.addTextInputSupport' },
+            { label: 'Add Collision Object From The Web', command: 'extension.disposableaddCollsion' },
             { label: 'Add Web Support', command: 'extension.addWebSupport' },
             { label: 'Web Output', command: 'extension.disposableWebOut' },
             { label: 'Run Web Server', command: 'extension.disposableWebRun' },
         ];
         const selected = await vscode.window.showQuickPick(options, { placeHolder: 'Choose an option' });
-
+        
         if (selected) {
             vscode.commands.executeCommand(selected.command);
         }
@@ -126,10 +130,17 @@ let disposableAddWebSupport = vscode.commands.registerCommand('extension.addWebS
 
 
 let disposableButtons = vscode.commands.registerCommand('extension.addButtonSupport', async () => {
-    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/buttons.rs';
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/buttons_text.rs';
 
-    await downloadToFolder('objects', 'buttons.rs', url);
+    await downloadToFolder('objects', 'txt_buttons.rs', url);
     vscode.window.showInformationMessage(`Adding Button Object in: ${folderPath}`);
+});
+
+let disposableGrid = vscode.commands.registerCommand('extension.addGridSupport', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/grid.rs';
+
+    await downloadToFolder('objects', 'grid.rs', url);
+    vscode.window.showInformationMessage(`Adding Grid Object in: ${folderPath}`);
 });
 
 
@@ -172,7 +183,7 @@ let disposableCargoRun = vscode.commands.registerCommand('extension.disposableCa
 
     runCommand("cargo run");
   
-    vscode.window.showInformationMessage(`Web Output Built.`);
+    vscode.window.showInformationMessage(`Native Built.`);
 });
 let disposableWebRun = vscode.commands.registerCommand('extension.disposableWebRun', async () => {
 
@@ -191,13 +202,32 @@ let disposableWebRun = vscode.commands.registerCommand('extension.disposableWebR
 
     runCommand("python3 -m http.server 8080 --bind 127.0.0.1");
   
-    vscode.window.showInformationMessage(`Web Output Built.`);
+    vscode.window.showInformationMessage(`Server Running.`);
+});
+let disposableImgButton = vscode.commands.registerCommand('extension.disposableImgButton', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/buttons_image.rs';
+
+    await downloadToFolder('objects', 'img_button.rs', url);
+    vscode.window.showInformationMessage(`Adding Image Button Object in: ${folderPath}`);
 });
 let disposableTextInput = vscode.commands.registerCommand('extension.addTextInputSupport', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/inputs.rs';
 
-    await downloadToFolder('objects', 'textInput.rs', url);
+    await downloadToFolder('objects', 'text_input.rs', url);
     vscode.window.showInformationMessage(`Adding Text Input Object in: ${folderPath}`);
+});
+let disposableaddImage = vscode.commands.registerCommand('extension.addImageSupport', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/images_obj.rs';
+
+    await downloadToFolder('objects', 'images_obj.rs', url);
+    vscode.window.showInformationMessage(`Adding Images Object in: ${folderPath}`);
+});
+
+let disposableaddCollsion = vscode.commands.registerCommand('extension.disposableaddCollsion', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/collision.rs';
+
+    await downloadToFolder('objects', 'collision.rs', url);
+    vscode.window.showInformationMessage(`Adding collision Object in: ${folderPath}`);
 });
 
 // Add commands to the context subscriptions
@@ -209,7 +239,11 @@ context.subscriptions.push(
     disposableButtons,
     disposableWebOut,
     disposableWebRun,
-    disposableCargoRun
+    disposableCargoRun,
+    addGridSupport,
+    disposableImgButton,
+    disposableaddImage,
+    disposableaddCollsion
 );
 }
 
@@ -257,14 +291,17 @@ async function downloadToFolder(folderName, fileName, url) {
         return;
     }
 
-    const objectsPath = path.join(folderPath, folderName);
-    if (!fs.existsSync(objectsPath)) {
-        fs.mkdirSync(objectsPath, { recursive: true });
+    // Ensure the folder is inside `src`
+    const srcPath = path.join(folderPath, 'src', folderName);
+    
+    if (!fs.existsSync(srcPath)) {
+        fs.mkdirSync(srcPath, { recursive: true });
     }
 
-    const filePath = path.join(objectsPath, fileName);
+    const filePath = path.join(srcPath, fileName);
     downloadFile(url, filePath);
 }
+
 
 
 function deactivate() { }
