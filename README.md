@@ -1,6 +1,7 @@
 Support has been added to build windows applications but you will need to add the support first with:
 
   sudo pacman -S mingw-w64-gcc
+  
   rustup target add x86_64-pc-windows-gnu
 
 For Web output you must add web support to the computer before you can build it with:
