@@ -27,8 +27,10 @@ function activate(context) {
             { label: 'Add Text Input Object From The Web', command: 'extension.addTextInputSupport' },
             { label: 'Add Collision Object From The Web', command: 'extension.disposableaddCollsion' },
             { label: 'Add Web Support', command: 'extension.addWebSupport' },
-            { label: 'Web Output', command: 'extension.disposableWebOut' },
-            { label: 'Run Web Server', command: 'extension.disposableWebRun' },
+            { label: 'Build: Linux Output', command: 'extension.disposableNativeOut' },
+            { label: 'Build: Windows Output', command: 'extension.disposableWindowOut' },
+            { label: 'Build: Web Output', command: 'extension.disposableWebOut' },
+            { label: 'Test: Run Web Server', command: 'extension.disposableWebRun' },
         ];
         const selected = await vscode.window.showQuickPick(options, { placeHolder: 'Choose an option' });
         
@@ -119,7 +121,7 @@ let disposableAddWebSupport = vscode.commands.registerCommand('extension.addWebS
         <body>
             <canvas id="glcanvas" tabindex='1'></canvas>
             <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
-            <script>load("target/wasm32-unknown-unknown/release/${lastFolderName}.wasm");</script>
+            <script>load("pkg/${lastFolderName}.wasm");</script>
         </body>
         </html>
         `;
@@ -155,13 +157,90 @@ let disposableWebOut = vscode.commands.registerCommand('extension.disposableWebO
     let terminal = vscode.window.createTerminal("Cargo Terminal");
     terminal.show();
 
-    let runCommand = (command) => {
-        terminal.sendText(command);
-    };
+    // Define the command to build the project
+    const buildCommand = "cargo build --release --target wasm32-unknown-unknown";
 
-    runCommand("cargo build --release --target wasm32-unknown-unknown");
+    // Run the build command and wait for it to complete
+    terminal.sendText(buildCommand);
+    await waitForBuildOutput(folderPath, "wasm32-unknown-unknown", ".wasm");
+        //vscode.window.showInformationMessage('Build Completed!');
+
+        // Now that the build is complete, move the files
+        const pkgFolder = path.join(folderPath, "pkg");
+        const binaryName = path.basename(folderPath) + ".wasm";
+        const releaseBinary = path.join(folderPath, "target", "wasm32-unknown-unknown", "release", binaryName);
+
+        moveBuildOutput(pkgFolder, releaseBinary, binaryName, folderPath);
+        vscode.window.showInformationMessage(`Web Output Built.`);
+       // vscode.window.showInformationMessage(`Windows Output Built and Moved.`);
   
-    vscode.window.showInformationMessage(`Web Output Built.`);
+});
+
+let disposableNativeOut = vscode.commands.registerCommand('extension.disposableNativeOut', async () => {
+
+    const folderPath = await getFolderPath();
+
+    if (!folderPath) {
+        vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
+        return;
+    }
+    let terminal = vscode.window.createTerminal("Cargo Terminal");
+    terminal.show();
+
+        // Define the command to build the project
+        const buildCommand = "cargo build --release --target x86_64-unknown-linux-gnu";
+
+        // Run the build command and wait for it to complete
+        terminal.sendText(buildCommand);
+        await waitForBuildOutput(folderPath, "x86_64-unknown-linux-gnu", "");
+
+            //vscode.window.showInformationMessage('Build Completed!');
+    
+            // Now that the build is complete, move the files
+            const pkgFolder = path.join(folderPath, "pkg");
+            const binaryName = path.basename(folderPath);
+            const releaseBinary = path.join(folderPath, "target", "x86_64-unknown-linux-gnu", "release", binaryName);
+    
+            moveBuildOutput(pkgFolder, releaseBinary, binaryName, folderPath);
+            vscode.window.showInformationMessage(`Linux Output Built.`);
+           // vscode.window.showInformationMessage(`Windows Output Built and Moved.`);
+
+  
+    
+    
+});
+let disposableWindowOut = vscode.commands.registerCommand('extension.disposableWindowOut', async () => {
+
+    const folderPath = await getFolderPath();
+
+    if (!folderPath) {
+        vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
+        return;
+    }
+    let terminal = vscode.window.createTerminal("Cargo Terminal");
+    terminal.show();
+
+       // Define the command to build the project
+       const buildCommand = "cargo build --release --target x86_64-pc-windows-gnu";
+
+       // Run the build command and wait for it to complete
+  
+       terminal.sendText(buildCommand);
+       
+       await waitForBuildOutput(folderPath, "x86_64-pc-windows-gnu", ".exe");
+       
+      
+        //   vscode.window.showInformationMessage('Build Completed!');
+   
+           // Now that the build is complete, move the files
+           const pkgFolder = path.join(folderPath, "pkg");
+           const binaryName = path.basename(folderPath) + ".exe";
+           const releaseBinary = path.join(folderPath, "target", "x86_64-pc-windows-gnu", "release", binaryName);
+   
+           moveBuildOutput(pkgFolder, releaseBinary, binaryName, folderPath);
+           vscode.window.showInformationMessage(`Windows Output Built.`);
+           // vscode.window.showInformationMessage(`Windows Output Built and Moved.`);
+        
 });
 
 
@@ -240,6 +319,8 @@ context.subscriptions.push(
     disposableWebOut,
     disposableWebRun,
     disposableCargoRun,
+    disposableNativeOut,
+    disposableWindowOut,
     addGridSupport,
     disposableImgButton,
     disposableaddImage,
@@ -302,7 +383,49 @@ async function downloadToFolder(folderName, fileName, url) {
     downloadFile(url, filePath);
 }
 
+function moveBuildOutput(pkgFolder, releaseBinary, binaryName, workspaceFolder) {
+    // Delete the pkg folder if it exists
+    if (fs.existsSync(pkgFolder)) {
+        fs.rmSync(pkgFolder, { recursive: true, force: true });
+    }
+    
+    // Create the pkg folder if it doesn’t exist
+    if (!fs.existsSync(pkgFolder)) {
+        fs.mkdirSync(pkgFolder, { recursive: true });
+    }
 
+    // Move the binary
+    const destBinary = path.join(pkgFolder, binaryName);
+    if (fs.existsSync(releaseBinary)) {
+        fs.copyFileSync(releaseBinary, destBinary);
+    }
+
+    // Copy the assets folder
+    const assetsFolder = path.join(workspaceFolder, "assets");
+    const destAssets = path.join(pkgFolder, "assets");
+    if (fs.existsSync(assetsFolder)) {
+        fs.rmSync(destAssets, { recursive: true, force: true });
+        fs.cpSync(assetsFolder, destAssets, { recursive: true });
+    }
+}
+function waitForBuildOutput(folderPath, target, fileExtension) {
+    return new Promise((resolve, reject) => {
+        const releaseBinary = path.join(folderPath, "target", target, "release", path.basename(folderPath) + fileExtension);
+
+        const checkInterval = setInterval(() => {
+            if (fs.existsSync(releaseBinary)) {
+                clearInterval(checkInterval); // Stop checking
+                resolve(); // File found, proceed
+            }
+        }, 1000); // Check every second
+
+        // Timeout after 5 minutes (adjust as necessary)
+        setTimeout(() => {
+            clearInterval(checkInterval); // Stop checking after timeout
+            reject(new Error('Build process timed out waiting for the output file.'));
+        }, 300000); // 5 minutes
+    });
+}
 
 function deactivate() { }
 
