@@ -21,10 +21,12 @@ function activate(context) {
             { label: 'Create Rust Project', command: 'extension.createRustProject' },
             { label: 'Run Program', command: 'extension.disposableCargoRun' },
             { label: 'Add Grid Object From The Web', command: 'extension.addGridSupport' },
+            { label: 'Add Label Object From The Web', command: 'extension.disposableLabelCreate' },
             { label: 'Add Image Object From The Web', command: 'extension.addImageSupport' },
             { label: 'Add Text Button Object From The Web', command: 'extension.addButtonSupport' },
             { label: 'Add Image Button Object From The Web', command: 'extension.disposableImgButton' },
             { label: 'Add Text Input Object From The Web', command: 'extension.addTextInputSupport' },
+            { label: 'Add ListView Object From The Web', command: 'extension.disposableListviewCreate' },
             { label: 'Add Collision Object From The Web', command: 'extension.disposableaddCollsion' },
             { label: 'Add Web Support', command: 'extension.addWebSupport' },
             { label: 'Build: Linux Output', command: 'extension.disposableNativeOut' },
@@ -33,7 +35,6 @@ function activate(context) {
             { label: 'Test: Run Web Server', command: 'extension.disposableWebRun' },
         ];
         const selected = await vscode.window.showQuickPick(options, { placeHolder: 'Choose an option' });
-        
         if (selected) {
             vscode.commands.executeCommand(selected.command);
         }
@@ -61,14 +62,18 @@ function activate(context) {
         runCommand("cargo init");
 
         runCommand("cargo add macroquad");
-
+        const fmtPath = path.join(folderPath, 'rustfmt.toml');
+        fs.writeFileSync(fmtPath, "max_width = 150\n");
 
      //   vscode.window.showInformationMessage(`Project initialized in ${folderPath}!`);
     const srcFolder = path.join(folderPath, 'src');
     if (!fs.existsSync(srcFolder)) {
         fs.mkdirSync(srcFolder, { recursive: true });
     }
-
+    const assetsFolder = path.join(folderPath, 'assets');
+    if (!fs.existsSync(assetsFolder)) {
+        fs.mkdirSync(assetsFolder, { recursive: true });
+    }
     const lastFolderName = path.basename(folderPath);
     const mainRsPath = path.join(folderPath, 'src', 'main.rs');
     const mainRsContent = `/*
@@ -76,17 +81,20 @@ By: <Your Name Here>
 Date: ${date}
 Program Details: <Program Description Here>
 */
+mod objects {
+
+}
+
 use macroquad::prelude::*;
 
 #[macroquad::main("${lastFolderName}")]
 async fn main() {
+    
     loop {
         clear_background(RED);
 
         draw_line(40.0, 40.0, 100.0, 200.0, 15.0, BLUE);
         draw_rectangle(screen_width() / 2.0 - 60.0, 100.0, 120.0, 60.0, GREEN);
-
-        draw_text("Hello, Macroquad!", 20.0, 20.0, 30.0, DARKGRAY);
 
         next_frame().await;
     }
@@ -289,8 +297,20 @@ let disposableImgButton = vscode.commands.registerCommand('extension.disposableI
     await downloadToFolder('objects', 'img_button.rs', url);
     vscode.window.showInformationMessage(`Adding Image Button Object in: ${folderPath}`);
 });
+let disposableLabelCreate = vscode.commands.registerCommand('extension.disposableLabelCreate', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/label.rs';
+
+    await downloadToFolder('objects', 'label.rs', url);
+    vscode.window.showInformationMessage(`Adding label Object in: ${folderPath}`);
+});
+let disposableListviewCreate = vscode.commands.registerCommand('extension.disposableListviewCreate', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/listview.rs';
+
+    await downloadToFolder('objects', 'listview.rs', url);
+    vscode.window.showInformationMessage(`Adding label Object in: ${folderPath}`);
+});
 let disposableTextInput = vscode.commands.registerCommand('extension.addTextInputSupport', async () => {
-    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/inputs.rs';
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/text_input.rs';
 
     await downloadToFolder('objects', 'text_input.rs', url);
     vscode.window.showInformationMessage(`Adding Text Input Object in: ${folderPath}`);
@@ -313,8 +333,11 @@ let disposableaddCollsion = vscode.commands.registerCommand('extension.disposabl
 context.subscriptions.push(
     disposableShowMenu,
     disposableCreateRust,
+    disposableGrid,
     disposableAddWebSupport,
+    disposableLabelCreate,
     disposableTextInput,
+    disposableListviewCreate,
     disposableButtons,
     disposableWebOut,
     disposableWebRun,

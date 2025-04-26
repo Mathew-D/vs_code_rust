@@ -2,7 +2,7 @@
     "name": "dusome-rust",
     "displayName": "Dusome Rust",
     "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
-    "version": "3.6.7",
+    "version": "3.7.2",
     "publisher": "Dusome",
     "engines": {
         "vscode": "^1.50.0"
@@ -24,6 +24,14 @@
             {
                 "command": "extension.disposableButtons",
                 "title": "Rust: Add Text Button Object From The Web"
+            },
+            {
+                "command": "extension.disposableListviewCreate",
+                "title": "Rust: ListView Object From The Web"
+            },
+            {
+                "command": "extension.disposableLabelCreate",
+                "title": "Rust: Add Label Object From The Web"
             },
             {
                 "command": "extension.disposableImgButton",
