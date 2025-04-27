@@ -23,10 +23,12 @@ function activate(context) {
             { label: 'Add Grid Object From The Web', command: 'extension.addGridSupport' },
             { label: 'Add Label Object From The Web', command: 'extension.disposableLabelCreate' },
             { label: 'Add Image Object From The Web', command: 'extension.addImageSupport' },
+            { label: 'Add Animated Image Object From The Web', command: 'extension.disposableAnimatedImg' },
             { label: 'Add Text Button Object From The Web', command: 'extension.addButtonSupport' },
             { label: 'Add Image Button Object From The Web', command: 'extension.disposableImgButton' },
             { label: 'Add Text Input Object From The Web', command: 'extension.addTextInputSupport' },
             { label: 'Add ListView Object From The Web', command: 'extension.disposableListviewCreate' },
+            { label: 'Add Slider Object From The Web', command: 'extension.disposableSliderCreate' },
             { label: 'Add Collision Object From The Web', command: 'extension.disposableaddCollsion' },
             { label: 'Add Web Support', command: 'extension.addWebSupport' },
             { label: 'Build: Linux Output', command: 'extension.disposableNativeOut' },
@@ -40,7 +42,7 @@ function activate(context) {
         }
         //     context.subscriptions.push(disposableShowMenu);
     });
-
+    
     // Register the "Create Rust Project" command
     let disposableCreateRust = vscode.commands.registerCommand('extension.createRustProject', async () => {
         // Get the folder path from the active workspace or open file
@@ -297,6 +299,18 @@ let disposableImgButton = vscode.commands.registerCommand('extension.disposableI
     await downloadToFolder('objects', 'img_button.rs', url);
     vscode.window.showInformationMessage(`Adding Image Button Object in: ${folderPath}`);
 });
+let disposableAnimatedImg = vscode.commands.registerCommand('extension.disposableAnimatedImg', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/animated_image.rs';
+
+    await downloadToFolder('objects', 'animated_image.rs', url);
+    vscode.window.showInformationMessage(`Adding Animated Image Object in: ${folderPath}`);
+});
+let disposableSliderCreate = vscode.commands.registerCommand('extension.disposableSliderCreate', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/slider.rs';
+
+    await downloadToFolder('objects', 'slider.rs', url);
+    vscode.window.showInformationMessage(`Adding Slider Object in: ${folderPath}`);
+});
 let disposableLabelCreate = vscode.commands.registerCommand('extension.disposableLabelCreate', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/label.rs';
 
@@ -335,7 +349,9 @@ context.subscriptions.push(
     disposableCreateRust,
     disposableGrid,
     disposableAddWebSupport,
+    disposableSliderCreate,
     disposableLabelCreate,
+    disposableAnimatedImg,
     disposableTextInput,
     disposableListviewCreate,
     disposableButtons,
