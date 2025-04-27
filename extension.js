@@ -29,6 +29,8 @@ function activate(context) {
             { label: 'Add Text Input Object From The Web', command: 'extension.addTextInputSupport' },
             { label: 'Add ListView Object From The Web', command: 'extension.disposableListviewCreate' },
             { label: 'Add Slider Object From The Web', command: 'extension.disposableSliderCreate' },
+            { label: 'Add Progress Bar Object From The Web', command: 'extension.disposableProgressBar' },
+            { label: 'Add Message Box Object From The Web', command: 'extension.disposableMessageBoxCreate' },
             { label: 'Add Collision Object From The Web', command: 'extension.disposableaddCollsion' },
             { label: 'Add Web Support', command: 'extension.addWebSupport' },
             { label: 'Build: Linux Output', command: 'extension.disposableNativeOut' },
@@ -42,7 +44,7 @@ function activate(context) {
         }
         //     context.subscriptions.push(disposableShowMenu);
     });
-    
+   
     // Register the "Create Rust Project" command
     let disposableCreateRust = vscode.commands.registerCommand('extension.createRustProject', async () => {
         // Get the folder path from the active workspace or open file
@@ -305,6 +307,18 @@ let disposableAnimatedImg = vscode.commands.registerCommand('extension.disposabl
     await downloadToFolder('objects', 'animated_image.rs', url);
     vscode.window.showInformationMessage(`Adding Animated Image Object in: ${folderPath}`);
 });
+let disposableMessageBoxCreate = vscode.commands.registerCommand('extension.disposableMessageBoxCreate', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/messagebox.rs';
+
+    await downloadToFolder('objects', 'messagebox.rs', url);
+    vscode.window.showInformationMessage(`Adding Message Box Object in: ${folderPath}`);
+});
+let disposableProgressBar = vscode.commands.registerCommand('extension.disposableProgressBar', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/progressbar.rs';
+
+    await downloadToFolder('objects', 'progressbar.rs', url);
+    vscode.window.showInformationMessage(`Adding Progress Bar Object in: ${folderPath}`);
+});
 let disposableSliderCreate = vscode.commands.registerCommand('extension.disposableSliderCreate', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/slider.rs';
 
@@ -350,10 +364,12 @@ context.subscriptions.push(
     disposableGrid,
     disposableAddWebSupport,
     disposableSliderCreate,
+    disposableProgressBar,
     disposableLabelCreate,
     disposableAnimatedImg,
     disposableTextInput,
     disposableListviewCreate,
+    disposableMessageBoxCreate,
     disposableButtons,
     disposableWebOut,
     disposableWebRun,
