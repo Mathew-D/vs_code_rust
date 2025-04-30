@@ -2,7 +2,7 @@
     "name": "dusome-rust",
     "displayName": "Dusome Rust",
     "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
-    "version": "3.8.1",
+    "version": "3.9.0",
     "publisher": "Dusome",
     "engines": {
         "vscode": "^1.50.0"
@@ -15,7 +15,8 @@
         "commands": [
             {
                 "command": "extension.showRustMenu",
-                "title": "Rust: Show Menu"
+                "title": "Rust: Show Menu",
+                "icon": "$(gear)" 
             },
             {
                 "command": "extension.createRustProject",
@@ -73,7 +74,14 @@
                 "command": "extension.disposableaddCollsion",
                 "title": "Rust: Collision Object"
             },
-
+            {
+                "command": "extension.disposableAdvancedHelp",
+                "title": "Rust: Add Advanced Help File From The Web"
+            },
+            {
+                "command": "extension.disposableTextFiles",
+                "title": "Rust: Add Text Files Object From The Web"
+            },
             {
                 "command": "extension.addWebSupport",
                 "title": "Rust: Add Web Support"
@@ -106,7 +114,7 @@
                     "command": "extension.showRustMenu",
                     "when": "resourceLangId == rust",
                     "group": "navigation",
-                    "title": "Rust Actions"
+                    "title": "Rust: Menu Actions"
                 }
             ]
         }

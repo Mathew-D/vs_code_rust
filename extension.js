@@ -6,10 +6,10 @@ const https = require('https');
 
 function activate(context) {
     // Create Status Bar item
-    const rustStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 250);
-   // rustStatusBarItem.text = "Rust: Menu"; // Label on the Status Bar
-   // rustStatusBarItem.command = "extension.showRustMenu"; // Command triggered when clicked
-  //  rustStatusBarItem.show(); // Display the button in the Status Bar
+   // const rustStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 250);
+   // r/ustStatusBarItem.text = "Rust: Menu"; // Label on the Status Bar
+   // /r/ustStatusBarItem.command = "extension.showRustMenu"; // Command triggered when clicked
+  //  rustS/tatusBarItem.show(); // Display the button in the Status Bar
    
 
     // Add it to context so it's disposed properly
@@ -20,18 +20,21 @@ function activate(context) {
         const options = [
             { label: 'Create Rust Project', command: 'extension.createRustProject' },
             { label: 'Run Program', command: 'extension.disposableCargoRun' },
-            { label: 'Add Grid Object From The Web', command: 'extension.addGridSupport' },
+            { label: 'Add Grid Object From The Web', command: 'extension.disposableGrid' },
             { label: 'Add Label Object From The Web', command: 'extension.disposableLabelCreate' },
-            { label: 'Add Image Object From The Web', command: 'extension.addImageSupport' },
+            { label: 'Add Image Object From The Web', command: 'extension.disposableaddImage' },
             { label: 'Add Animated Image Object From The Web', command: 'extension.disposableAnimatedImg' },
-            { label: 'Add Text Button Object From The Web', command: 'extension.addButtonSupport' },
+            { label: 'Add Text Button Object From The Web', command: 'extension.disposableButtons' },
             { label: 'Add Image Button Object From The Web', command: 'extension.disposableImgButton' },
-            { label: 'Add Text Input Object From The Web', command: 'extension.addTextInputSupport' },
+            { label: 'Add Text Input Object From The Web', command: 'extension.disposableTextInput' },
             { label: 'Add ListView Object From The Web', command: 'extension.disposableListviewCreate' },
+            { label: 'Add Text Files Object From The Web', command: 'extension.disposableTextFiles' },
             { label: 'Add Slider Object From The Web', command: 'extension.disposableSliderCreate' },
             { label: 'Add Progress Bar Object From The Web', command: 'extension.disposableProgressBar' },
             { label: 'Add Message Box Object From The Web', command: 'extension.disposableMessageBoxCreate' },
             { label: 'Add Collision Object From The Web', command: 'extension.disposableaddCollsion' },
+            { label: 'Add Rust General Help File From The Web', command: 'extension.disposableReadMeHelp' },
+            { label: 'Add Rust Advanced Help File From The Web', command: 'extension.disposableAdvancedHelp' },
             { label: 'Add Web Support', command: 'extension.addWebSupport' },
             { label: 'Build: Linux Output', command: 'extension.disposableNativeOut' },
             { label: 'Build: Windows Output', command: 'extension.disposableWindowOut' },
@@ -44,7 +47,6 @@ function activate(context) {
         }
         //     context.subscriptions.push(disposableShowMenu);
     });
-   
     // Register the "Create Rust Project" command
     let disposableCreateRust = vscode.commands.registerCommand('extension.createRustProject', async () => {
         // Get the folder path from the active workspace or open file
@@ -143,14 +145,14 @@ let disposableAddWebSupport = vscode.commands.registerCommand('extension.addWebS
 });
 
 
-let disposableButtons = vscode.commands.registerCommand('extension.addButtonSupport', async () => {
+let disposableButtons = vscode.commands.registerCommand('extension.disposableButtons', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/buttons_text.rs';
 
     await downloadToFolder('objects', 'txt_buttons.rs', url);
     vscode.window.showInformationMessage(`Adding Button Object in: ${folderPath}`);
 });
 
-let disposableGrid = vscode.commands.registerCommand('extension.addGridSupport', async () => {
+let disposableGrid = vscode.commands.registerCommand('extension.disposableGrid', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/grid.rs';
 
     await downloadToFolder('objects', 'grid.rs', url);
@@ -301,6 +303,36 @@ let disposableImgButton = vscode.commands.registerCommand('extension.disposableI
     await downloadToFolder('objects', 'img_button.rs', url);
     vscode.window.showInformationMessage(`Adding Image Button Object in: ${folderPath}`);
 });
+let disposableReadMeHelp = vscode.commands.registerCommand('extension.disposableReadMeHelp', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/RUST_HELP.md';
+    
+    const folderPath = await getFolderPath();
+    if (!folderPath) {
+        vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
+        return;
+    }
+    const filePath = path.join(folderPath, 'RUST_HELP.md');
+    downloadFile(url, filePath);
+    vscode.window.showInformationMessage(`Adding Rust Help File in: ${folderPath}`);
+});
+let disposableAdvancedHelp = vscode.commands.registerCommand('extension.disposableAdvancedHelp', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/RUST_ADVANCED.md';
+    
+    const folderPath = await getFolderPath();
+    if (!folderPath) {
+        vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
+        return;
+    }
+    const filePath = path.join(folderPath, 'RUST_ADVANCED.md');
+    downloadFile(url, filePath);
+    vscode.window.showInformationMessage(`Adding Rust Advanced Help File in: ${folderPath}`);
+});
+let disposableTextFiles = vscode.commands.registerCommand('extension.disposableTextFiles', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/textfiles.rs';
+
+    await downloadToFolder('objects', 'textfiles.rs', url);
+    vscode.window.showInformationMessage(`Adding Text Files Object in: ${folderPath}`);
+});
 let disposableAnimatedImg = vscode.commands.registerCommand('extension.disposableAnimatedImg', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/animated_image.rs';
 
@@ -335,15 +367,15 @@ let disposableListviewCreate = vscode.commands.registerCommand('extension.dispos
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/listview.rs';
 
     await downloadToFolder('objects', 'listview.rs', url);
-    vscode.window.showInformationMessage(`Adding label Object in: ${folderPath}`);
+    vscode.window.showInformationMessage(`Adding ListView Object in: ${folderPath}`);
 });
-let disposableTextInput = vscode.commands.registerCommand('extension.addTextInputSupport', async () => {
+let disposableTextInput = vscode.commands.registerCommand('extension.disposableTextInput', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/text_input.rs';
 
     await downloadToFolder('objects', 'text_input.rs', url);
     vscode.window.showInformationMessage(`Adding Text Input Object in: ${folderPath}`);
 });
-let disposableaddImage = vscode.commands.registerCommand('extension.addImageSupport', async () => {
+let disposableaddImage = vscode.commands.registerCommand('extension.disposableaddImage', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/images_obj.rs';
 
     await downloadToFolder('objects', 'images_obj.rs', url);
@@ -368,6 +400,9 @@ context.subscriptions.push(
     disposableLabelCreate,
     disposableAnimatedImg,
     disposableTextInput,
+    disposableReadMeHelp,
+    disposableAdvancedHelp,
+    disposableTextFiles,
     disposableListviewCreate,
     disposableMessageBoxCreate,
     disposableButtons,
@@ -376,7 +411,6 @@ context.subscriptions.push(
     disposableCargoRun,
     disposableNativeOut,
     disposableWindowOut,
-    addGridSupport,
     disposableImgButton,
     disposableaddImage,
     disposableaddCollsion
