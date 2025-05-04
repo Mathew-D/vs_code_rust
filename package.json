@@ -2,7 +2,7 @@
     "name": "dusome-rust",
     "displayName": "Dusome Rust",
     "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
-    "version": "3.9.0",
+    "version": "3.9.1",
     "publisher": "Dusome",
     "engines": {
         "vscode": "^1.50.0"
