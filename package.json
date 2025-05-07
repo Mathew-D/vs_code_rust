@@ -2,7 +2,7 @@
     "name": "dusome-rust",
     "displayName": "Dusome Rust",
     "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
-    "version": "3.9.2",
+    "version": "3.9.3",
     "publisher": "Dusome",
     "engines": {
         "vscode": "^1.50.0"
@@ -24,39 +24,39 @@
             },
             {
                 "command": "extension.disposableButtons",
-                "title": "Rust: Add Text Button Object From The Web"
+                "title": "Rust: Add Text Button Module From The Web"
             },
             {
                 "command": "extension.disposableAnimatedImg",
-                "title": "Rust: Animated Image Object From The Web"
+                "title": "Rust: Animated Image Module From The Web"
             },
             {
                 "command": "extension.disposableSliderCreate",
-                "title": "Rust: Slider Object From The Web"
+                "title": "Rust: Slider Module From The Web"
             },
             {
                 "command": "extension.disposableListviewCreate",
-                "title": "Rust: ListView Object From The Web"
+                "title": "Rust: ListView Module From The Web"
             },
             {
                 "command": "extension.disposableLabelCreate",
-                "title": "Rust: Add Label Object From The Web"
+                "title": "Rust: Add Label Module From The Web"
             },
             {
                 "command": "extension.disposableImgButton",
-                "title": "Rust: Add Image Button Object From The Web"
+                "title": "Rust: Add Image Button Module From The Web"
             },
             {
                 "command": "extension.disposableGrid",
-                "title": "Rust: Add Grid Object From The Web"
+                "title": "Rust: Add Grid Module From The Web"
             },
             {
                 "command": "extension.disposableaddImage",
-                "title": "Rust: Add Image Object From The Web"
+                "title": "Rust: Add Image Module From The Web"
             },
             {
                 "command": "extension.disposableTextInput",
-                "title": "Rust: Add Text Input Object From The Web"
+                "title": "Rust: Add Text Input Module From The Web"
             },
             {
                 "command": "extension.disposableWebOut",
@@ -72,7 +72,7 @@
             },
             {
                 "command": "extension.disposableaddCollsion",
-                "title": "Rust: Collision Object"
+                "title": "Rust: Collision Module"
             },
             {
                 "command": "extension.disposableAdvancedHelp",
@@ -80,7 +80,7 @@
             },
             {
                 "command": "extension.disposableTextFiles",
-                "title": "Rust: Add Text Files Object From The Web"
+                "title": "Rust: Add Text Files Module From The Web"
             },
             {
                 "command": "extension.addWebSupport",

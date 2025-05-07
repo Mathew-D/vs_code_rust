@@ -376,9 +376,9 @@ let disposableTextInput = vscode.commands.registerCommand('extension.disposableT
     vscode.window.showInformationMessage(`Adding Text Input Module in: ${folderPath}`);
 });
 let disposableaddImage = vscode.commands.registerCommand('extension.disposableaddImage', async () => {
-    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/images_obj.rs';
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/still_image.rs';
 
-    await downloadToFolder('modules', 'images_obj.rs', url);
+    await downloadToFolder('modules', 'still_image.rs', url);
     vscode.window.showInformationMessage(`Adding Images Module in: ${folderPath}`);
 });
 
