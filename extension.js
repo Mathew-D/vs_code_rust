@@ -22,8 +22,9 @@ function activate(context) {
             { label: 'Run Program', command: 'extension.disposableCargoRun' },
             { label: 'Add Grid Module From The Web', command: 'extension.disposableGrid' },
             { label: 'Add Label Module From The Web', command: 'extension.disposableLabelCreate' },
-            { label: 'Add Image Module From The Web', command: 'extension.disposableaddImage' },
+            { label: 'Add Still Image Module From The Web', command: 'extension.disposableaddImage' },
             { label: 'Add Animated Image Module From The Web', command: 'extension.disposableAnimatedImg' },
+            { label: 'Add Preload Image Module From The Web', command: 'extension.disposableImagePreload' },
             { label: 'Add Text Button Module From The Web', command: 'extension.disposableButtons' },
             { label: 'Add Image Button Module From The Web', command: 'extension.disposableImgButton' },
             { label: 'Add Text Input Module From The Web', command: 'extension.disposableTextInput' },
@@ -87,13 +88,26 @@ By: <Your Name Here>
 Date: ${date}
 Program Details: <Program Description Here>
 */
-mod modules {
 
-}
+mod modules;
 
 use macroquad::prelude::*;
 
-#[macroquad::main("${lastFolderName}")]
+/// Set up window settings before the app runs
+fn window_conf() -> Conf {
+    Conf {
+        window_title: "${lastFolderName}".to_owned(),
+        window_width: 1024,
+        window_height: 768,
+        fullscreen: false,
+        high_dpi: true,
+        window_resizable: true,
+        sample_count: 4, // MSAA: makes shapes look smoother
+        ..Default::default()
+    }
+}
+
+#[macroquad::main(window_conf)]
 async fn main() {
     
     loop {
@@ -107,6 +121,9 @@ async fn main() {
 }
 `;
     fs.writeFileSync(mainRsPath, mainRsContent);
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/mod.rs';
+
+    await downloadToFolder('modules', 'mod.rs', url);
     vscode.window.showInformationMessage(`Creating Rust Project in: ${folderPath}`);
     // You can add your logic to run cargo init here
 });
@@ -129,7 +146,37 @@ let disposableAddWebSupport = vscode.commands.registerCommand('extension.addWebS
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <title>${lastFolderName}</title>
             <style>
-                html, body, canvas { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: black; }
+                 /* === MODE 1: Responsive fullscreen canvas (default) === */
+        html,body,canvas {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: black;
+        }
+
+        /* === MODE 2: Fixed-size centered canvas (uncomment to use) === */
+        /*
+        body {
+            margin: 0;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        canvas {
+            width: 1024px;
+            height: 768px;
+            background: black;
+        }
+
+        html {
+            overflow: hidden;
+        }
+        */
             </style>
         </head>
         <body>
@@ -146,9 +193,9 @@ let disposableAddWebSupport = vscode.commands.registerCommand('extension.addWebS
 
 
 let disposableButtons = vscode.commands.registerCommand('extension.disposableButtons', async () => {
-    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/buttons_text.rs';
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/text_button.rs';
 
-    await downloadToFolder('modules', 'txt_buttons.rs', url);
+    await downloadToFolder('modules', 'text_button.rs', url);
     vscode.window.showInformationMessage(`Adding Button Module in: ${folderPath}`);
 });
 
@@ -298,9 +345,10 @@ let disposableWebRun = vscode.commands.registerCommand('extension.disposableWebR
     vscode.window.showInformationMessage(`Server Running.`);
 });
 let disposableImgButton = vscode.commands.registerCommand('extension.disposableImgButton', async () => {
-    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/buttons_image.rs';
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/image_button.rs';
 
-    await downloadToFolder('modules', 'img_button.rs', url);
+
+    await downloadToFolder('modules', 'image_button.rs', url);
     vscode.window.showInformationMessage(`Adding Image Button Module in: ${folderPath}`);
 });
 let disposableReadMeHelp = vscode.commands.registerCommand('extension.disposableReadMeHelp', async () => {
@@ -389,6 +437,13 @@ let disposableaddCollsion = vscode.commands.registerCommand('extension.disposabl
     vscode.window.showInformationMessage(`Adding collision Module in: ${folderPath}`);
 });
 
+let disposableImagePreload = vscode.commands.registerCommand('extension.disposableImagePreload', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/preload_image.rs';
+
+    await downloadToFolder('modules', 'preload_image.rs', url);
+    vscode.window.showInformationMessage(`Adding Preload Image Module in: ${folderPath}`);
+});
+
 // Add commands to the context subscriptions
 context.subscriptions.push(
     disposableShowMenu,
@@ -413,7 +468,8 @@ context.subscriptions.push(
     disposableWindowOut,
     disposableImgButton,
     disposableaddImage,
-    disposableaddCollsion
+    disposableaddCollsion,
+    disposableImagePreload
 );
 }
 
@@ -447,7 +503,7 @@ function downloadFile(url, targetPath) {
 
         fileStream.on('finish', () => {
             fileStream.close();
-            vscode.window.showInformationMessage(`${path.basename(targetPath)} downloaded successfully!`);
+      //      vscode.window.showInformationMessage(`${path.basename(targetPath)} downloaded successfully!`);
         });
     }).on('error', (err) => {
         vscode.window.showErrorMessage(`Download failed: ${err.message}`);
