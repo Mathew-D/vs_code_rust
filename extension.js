@@ -34,6 +34,7 @@ function activate(context) {
             { label: 'Add Progress Bar Module From The Web', command: 'extension.disposableProgressBar' },
             { label: 'Add Message Box Module From The Web', command: 'extension.disposableMessageBoxCreate' },
             { label: 'Add Collision Module From The Web', command: 'extension.disposableaddCollsion' },
+            { label: 'Add Scale Module From The Web', command: 'extension.disposableScale' },
             { label: 'Add Rust General Help File From The Web', command: 'extension.disposableReadMeHelp' },
             { label: 'Add Rust Advanced Help File From The Web', command: 'extension.disposableAdvancedHelp' },
             { label: 'Add Web Support', command: 'extension.addWebSupport' },
@@ -96,7 +97,7 @@ use macroquad::prelude::*;
 /// Set up window settings before the app runs
 fn window_conf() -> Conf {
     Conf {
-        window_title: "${lastFolderName}".to_owned(),
+        window_title: "${lastFolderName}".to_string(),
         window_width: 1024,
         window_height: 768,
         fullscreen: false,
@@ -123,7 +124,7 @@ async fn main() {
     fs.writeFileSync(mainRsPath, mainRsContent);
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/mod.rs';
 
-    await downloadToFolder('modules', 'mod.rs', url);
+    const modulesFolderPath = await downloadToFolder('modules', 'mod.rs', url);
     vscode.window.showInformationMessage(`Creating Rust Project in: ${folderPath}`);
     // You can add your logic to run cargo init here
 });
@@ -195,15 +196,19 @@ let disposableAddWebSupport = vscode.commands.registerCommand('extension.addWebS
 let disposableButtons = vscode.commands.registerCommand('extension.disposableButtons', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/text_button.rs';
 
-    await downloadToFolder('modules', 'text_button.rs', url);
-    vscode.window.showInformationMessage(`Adding Button Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'text_button.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Button Module in: ${folderPath}`);
+    }
 });
 
 let disposableGrid = vscode.commands.registerCommand('extension.disposableGrid', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/grid.rs';
 
-    await downloadToFolder('modules', 'grid.rs', url);
-    vscode.window.showInformationMessage(`Adding Grid Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'grid.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Grid Module in: ${folderPath}`);
+    }
 });
 
 
@@ -347,9 +352,10 @@ let disposableWebRun = vscode.commands.registerCommand('extension.disposableWebR
 let disposableImgButton = vscode.commands.registerCommand('extension.disposableImgButton', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/image_button.rs';
 
-
-    await downloadToFolder('modules', 'image_button.rs', url);
-    vscode.window.showInformationMessage(`Adding Image Button Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'image_button.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Image Button Module in: ${folderPath}`);
+    }
 });
 let disposableReadMeHelp = vscode.commands.registerCommand('extension.disposableReadMeHelp', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/RUST_HELP.md';
@@ -378,70 +384,101 @@ let disposableAdvancedHelp = vscode.commands.registerCommand('extension.disposab
 let disposableTextFiles = vscode.commands.registerCommand('extension.disposableTextFiles', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/textfiles.rs';
 
-    await downloadToFolder('modules', 'textfiles.rs', url);
-    vscode.window.showInformationMessage(`Adding Text Files Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'textfiles.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Text Files Module in: ${folderPath}`);
+    }
 });
 let disposableAnimatedImg = vscode.commands.registerCommand('extension.disposableAnimatedImg', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/animated_image.rs';
 
-    await downloadToFolder('modules', 'animated_image.rs', url);
-    vscode.window.showInformationMessage(`Adding Animated Image Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'animated_image.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Animated Image Module in: ${folderPath}`);
+    }
 });
 let disposableMessageBoxCreate = vscode.commands.registerCommand('extension.disposableMessageBoxCreate', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/messagebox.rs';
 
-    await downloadToFolder('modules', 'messagebox.rs', url);
-    vscode.window.showInformationMessage(`Adding Message Box Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'messagebox.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Message Box Module in: ${folderPath}`);
+    }
 });
 let disposableProgressBar = vscode.commands.registerCommand('extension.disposableProgressBar', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/progressbar.rs';
 
-    await downloadToFolder('modules', 'progressbar.rs', url);
-    vscode.window.showInformationMessage(`Adding Progress Bar Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'progressbar.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Progress Bar Module in: ${folderPath}`);
+    }
 });
 let disposableSliderCreate = vscode.commands.registerCommand('extension.disposableSliderCreate', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/slider.rs';
 
-    await downloadToFolder('modules', 'slider.rs', url);
-    vscode.window.showInformationMessage(`Adding Slider Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'slider.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Slider Module in: ${folderPath}`);
+    }
 });
 let disposableLabelCreate = vscode.commands.registerCommand('extension.disposableLabelCreate', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/label.rs';
 
-    await downloadToFolder('modules', 'label.rs', url);
-    vscode.window.showInformationMessage(`Adding label Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'label.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding label Module in: ${folderPath}`);
+    }
 });
 let disposableListviewCreate = vscode.commands.registerCommand('extension.disposableListviewCreate', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/listview.rs';
 
-    await downloadToFolder('modules', 'listview.rs', url);
-    vscode.window.showInformationMessage(`Adding ListView Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'listview.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding ListView Module in: ${folderPath}`);
+    }
 });
 let disposableTextInput = vscode.commands.registerCommand('extension.disposableTextInput', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/text_input.rs';
 
-    await downloadToFolder('modules', 'text_input.rs', url);
-    vscode.window.showInformationMessage(`Adding Text Input Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'text_input.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Text Input Module in: ${folderPath}`);
+    }
 });
 let disposableaddImage = vscode.commands.registerCommand('extension.disposableaddImage', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/still_image.rs';
 
-    await downloadToFolder('modules', 'still_image.rs', url);
-    vscode.window.showInformationMessage(`Adding Images Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'still_image.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Images Module in: ${folderPath}`);
+    }
 });
 
 let disposableaddCollsion = vscode.commands.registerCommand('extension.disposableaddCollsion', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/collision.rs';
 
-    await downloadToFolder('modules', 'collision.rs', url);
-    vscode.window.showInformationMessage(`Adding collision Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'collision.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding collision Module in: ${folderPath}`);
+    }
 });
 
 let disposableImagePreload = vscode.commands.registerCommand('extension.disposableImagePreload', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/preload_image.rs';
 
-    await downloadToFolder('modules', 'preload_image.rs', url);
-    vscode.window.showInformationMessage(`Adding Preload Image Module in: ${folderPath}`);
+    const folderPath = await downloadToFolder('modules', 'preload_image.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Preload Image Module in: ${folderPath}`);
+    }
+});
+
+let disposableScale = vscode.commands.registerCommand('extension.disposableScale', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/scale.rs';
+
+    const folderPath = await downloadToFolder('modules', 'scale.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Scale Module in: ${folderPath}`);
+    }
 });
 
 // Add commands to the context subscriptions
@@ -469,7 +506,8 @@ context.subscriptions.push(
     disposableImgButton,
     disposableaddImage,
     disposableaddCollsion,
-    disposableImagePreload
+    disposableImagePreload,
+    disposableScale
 );
 }
 
@@ -514,7 +552,7 @@ async function downloadToFolder(folderName, fileName, url) {
     const folderPath = await getFolderPath();
     if (!folderPath) {
         vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
-        return;
+        return null;
     }
 
     // Ensure the folder is inside `src`
@@ -526,6 +564,9 @@ async function downloadToFolder(folderName, fileName, url) {
 
     const filePath = path.join(srcPath, fileName);
     downloadFile(url, filePath);
+    
+    // Return the folder path so it can be used in the calling function
+    return folderPath;
 }
 
 function moveBuildOutput(pkgFolder, releaseBinary, binaryName, workspaceFolder) {

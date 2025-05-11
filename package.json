@@ -2,7 +2,7 @@
     "name": "dusome-rust",
     "displayName": "Dusome Rust",
     "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
-    "version": "3.9.4",
+    "version": "4.0.0",
     "publisher": "Dusome",
     "engines": {
         "vscode": "^1.50.0"
@@ -16,7 +16,7 @@
             {
                 "command": "extension.showRustMenu",
                 "title": "Rust: Show Menu",
-                "icon": "$(gear)" 
+                "icon": "$(gear)"
             },
             {
                 "command": "extension.createRustProject",
@@ -85,6 +85,10 @@
             {
                 "command": "extension.addWebSupport",
                 "title": "Rust: Add Web Support"
+            },
+            {
+                "command": "extension.disposableScale",
+                "title": "Rust: Add Scale Module From The Web"
             }
         ],
         "menus": {
@@ -123,7 +127,7 @@
         "extension.js"
     ],
     "scripts": {
-        "package": "vsce package",
+        "package": "npx @vscode/vsce package",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
@@ -139,6 +143,8 @@
     "author": "Mathew Dusome",
     "license": "MIT",
     "devDependencies": {
-        "@types/node": "^22.5.4"
+        "@types/node": "^22.5.4",
+        "@vscode/vsce": "^2.32.0",
+        "glob": "^10.4.5"
     }
 }
