@@ -2,7 +2,7 @@
     "name": "dusome-rust",
     "displayName": "Dusome Rust",
     "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
-    "version": "4.0.0",
+    "version": "4.0.2",
     "publisher": "Dusome",
     "engines": {
         "vscode": "^1.50.0"
@@ -89,6 +89,10 @@
             {
                 "command": "extension.disposableScale",
                 "title": "Rust: Add Scale Module From The Web"
+            },
+            {
+                "command": "extension.disposableDatabase",
+                "title": "Rust: Add Database Module From The Web"
             }
         ],
         "menus": {

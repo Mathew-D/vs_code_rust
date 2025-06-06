@@ -4,6 +4,9 @@ const path = require('path');
 const { exec } = require('child_process'); // ✅ Import exec
 const https = require('https');
 
+// Add a global terminal variable
+let cargoTerminal = null;
+
 function activate(context) {
     // Create Status Bar item
    // const rustStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 250);
@@ -14,6 +17,15 @@ function activate(context) {
 
     // Add it to context so it's disposed properly
     //  context.subscriptions.push(rustStatusBarItem);
+
+    // Register a handler to reset terminal reference when it's closed
+    context.subscriptions.push(
+        vscode.window.onDidCloseTerminal(terminal => {
+            if (terminal === cargoTerminal) {
+                cargoTerminal = null;
+            }
+        })
+    );
 
     // Register the "Show Rust Menu" command
     let disposableShowMenu = vscode.commands.registerCommand('extension.showRustMenu', async () => {
@@ -35,6 +47,7 @@ function activate(context) {
             { label: 'Add Message Box Module From The Web', command: 'extension.disposableMessageBoxCreate' },
             { label: 'Add Collision Module From The Web', command: 'extension.disposableaddCollsion' },
             { label: 'Add Scale Module From The Web', command: 'extension.disposableScale' },
+            { label: 'Add Database Module From The Web', command: 'extension.disposableDatabase' },
             { label: 'Add Rust General Help File From The Web', command: 'extension.disposableReadMeHelp' },
             { label: 'Add Rust Advanced Help File From The Web', command: 'extension.disposableAdvancedHelp' },
             { label: 'Add Web Support', command: 'extension.addWebSupport' },
@@ -60,7 +73,7 @@ function activate(context) {
         }
         const date = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
 
-        let terminal = vscode.window.createTerminal("Cargo Terminal");
+        let terminal = getOrCreateTerminal("Cargo Terminal");
         terminal.show();
     
         let runCommand = (command) => {
@@ -70,6 +83,48 @@ function activate(context) {
         runCommand("cargo init");
 
         runCommand("cargo add macroquad");
+        
+        // Add a cross-platform approach to add features section to Cargo.toml
+        // Set up a polling interval to check when Cargo.toml is ready
+        let checkInterval;
+        const maxWaitTime = 90000; // Maximum wait time in milliseconds (1.5 minutes)
+        const startTime = Date.now();
+        
+        const checkAndUpdateCargoToml = () => {
+            try {
+                const cargoTomlPath = path.join(folderPath, 'Cargo.toml');
+                
+                if (fs.existsSync(cargoTomlPath)) {
+                    // Check if the file has the macroquad dependency
+                    let content = fs.readFileSync(cargoTomlPath, 'utf8');
+                    
+                    if (content.includes("macroquad") && !content.includes("[features]")) {
+                        // Cargo.toml exists and has macroquad dependency but no features section yet
+                        // Append the features section
+                        fs.appendFileSync(cargoTomlPath, '\n[features]\nscale = []\ndefault = []\n');
+                       // console.log('Added features section to Cargo.toml');
+                        
+                        // Stop checking
+                        clearInterval(checkInterval);
+                    } else if (Date.now() - startTime > maxWaitTime) {
+                        // Time exceeded, stop checking
+                        clearInterval(checkInterval);
+                        console.warn('Timed out waiting for Cargo.toml to be updated with macroquad');
+                    }
+                } else if (Date.now() - startTime > maxWaitTime) {
+                    // Time exceeded, stop checking
+                    clearInterval(checkInterval);
+                    console.warn('Timed out waiting for Cargo.toml to be created');
+                }
+            } catch (error) {
+                console.error('Error checking/updating Cargo.toml:', error);
+                clearInterval(checkInterval);
+            }
+        };
+        
+        // Check every second until the file is ready or timeout occurs
+        checkInterval = setInterval(checkAndUpdateCargoToml, 1000);
+        
         const fmtPath = path.join(folderPath, 'rustfmt.toml');
         fs.writeFileSync(fmtPath, "max_width = 150\n");
 
@@ -220,7 +275,7 @@ let disposableWebOut = vscode.commands.registerCommand('extension.disposableWebO
         vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
         return;
     }
-    let terminal = vscode.window.createTerminal("Cargo Terminal");
+    let terminal = getOrCreateTerminal("Cargo Terminal");
     terminal.show();
 
     // Define the command to build the project
@@ -250,7 +305,7 @@ let disposableNativeOut = vscode.commands.registerCommand('extension.disposableN
         vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
         return;
     }
-    let terminal = vscode.window.createTerminal("Cargo Terminal");
+    let terminal = getOrCreateTerminal("Cargo Terminal");
     terminal.show();
 
         // Define the command to build the project
@@ -283,7 +338,7 @@ let disposableWindowOut = vscode.commands.registerCommand('extension.disposableW
         vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
         return;
     }
-    let terminal = vscode.window.createTerminal("Cargo Terminal");
+    let terminal = getOrCreateTerminal("Cargo Terminal");
     terminal.show();
 
        // Define the command to build the project
@@ -319,7 +374,7 @@ let disposableCargoRun = vscode.commands.registerCommand('extension.disposableCa
         vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
         return;
     }
-    let terminal = vscode.window.createTerminal("Cargo Terminal");
+    let terminal = getOrCreateTerminal("Cargo Terminal");
     terminal.show();
 
     let runCommand = (command) => {
@@ -338,7 +393,7 @@ let disposableWebRun = vscode.commands.registerCommand('extension.disposableWebR
         vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
         return;
     }
-    let terminal = vscode.window.createTerminal("Cargo Terminal");
+    let terminal = getOrCreateTerminal("Cargo Terminal");
     terminal.show();
 
     let runCommand = (command) => {
@@ -463,6 +518,15 @@ let disposableaddCollsion = vscode.commands.registerCommand('extension.disposabl
     }
 });
 
+let disposableDatabase = vscode.commands.registerCommand('extension.disposableDatabase', async () => {
+    const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/database.rs';
+
+    const folderPath = await downloadToFolder('modules', 'database.rs', url);
+    if (folderPath) {
+        vscode.window.showInformationMessage(`Adding Database Module in: ${folderPath}`);
+    }
+});
+
 let disposableImagePreload = vscode.commands.registerCommand('extension.disposableImagePreload', async () => {
     const url = 'https://raw.githubusercontent.com/Mathew-D/rust-objects/main/preload_image.rs';
 
@@ -507,6 +571,7 @@ context.subscriptions.push(
     disposableaddImage,
     disposableaddCollsion,
     disposableImagePreload,
+    disposableDatabase,
     disposableScale
 );
 }
@@ -611,6 +676,23 @@ function waitForBuildOutput(folderPath, target, fileExtension) {
             reject(new Error('Build process timed out waiting for the output file.'));
         }, 300000); // 5 minutes
     });
+}
+
+// Helper function to get or create a terminal
+function getOrCreateTerminal(name = "Cargo Terminal") {
+    // If we already have a terminal, check if it still exists
+    if (cargoTerminal) {
+        const terminals = vscode.window.terminals;
+        const exists = terminals.some(t => t === cargoTerminal);
+        
+        if (exists) {
+            return cargoTerminal;
+        }
+    }
+    
+    // Create a new terminal if needed
+    cargoTerminal = vscode.window.createTerminal(name);
+    return cargoTerminal;
 }
 
 function deactivate() { }
