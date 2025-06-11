@@ -2,7 +2,7 @@
     "name": "dusome-rust",
     "displayName": "Dusome Rust",
     "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
-    "version": "4.0.2",
+    "version": "4.0.4",
     "publisher": "Dusome",
     "engines": {
         "vscode": "^1.50.0"
@@ -21,6 +21,10 @@
             {
                 "command": "extension.createRustProject",
                 "title": "Rust: Create Project"
+            },
+            {
+                "command": "extension.checkWebDependencies",
+                "title": "Rust: Check Web Dependencies"
             },
             {
                 "command": "extension.disposableButtons",
@@ -81,10 +85,6 @@
             {
                 "command": "extension.disposableTextFiles",
                 "title": "Rust: Add Text Files Module From The Web"
-            },
-            {
-                "command": "extension.addWebSupport",
-                "title": "Rust: Add Web Support"
             },
             {
                 "command": "extension.disposableScale",
