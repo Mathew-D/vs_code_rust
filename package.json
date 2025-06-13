@@ -2,7 +2,7 @@
     "name": "dusome-rust",
     "displayName": "Dusome Rust",
     "description": "A VS Code extension to generate a Rust setup for Mr. Dusome's class.",
-    "version": "4.0.4",
+    "version": "4.0.5",
     "publisher": "Dusome",
     "engines": {
         "vscode": "^1.50.0"
@@ -64,7 +64,11 @@
             },
             {
                 "command": "extension.disposableWebOut",
-                "title": "Rust: Build Web Output"
+                "title": "Rust: Build Web Output (Advanced)"
+            },
+            {
+                "command": "extension.disposableWebOutBasic",
+                "title": "Rust: Build Web Output (Basic)"
             },
             {
                 "command": "extension.disposableWebRun",

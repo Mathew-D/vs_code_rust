@@ -50,7 +50,8 @@ function activate(context) {
             { label: 'Add Rust Advanced Help File From The Web', command: 'extension.disposableAdvancedHelp' },
             { label: 'Build: Linux Output', command: 'extension.disposableNativeOut' },
             { label: 'Build: Windows Output', command: 'extension.disposableWindowOut' },
-            { label: 'Build: Web Output', command: 'extension.disposableWebOut' },
+            { label: 'Build: Web Output (Basic)', command: 'extension.disposableWebOutBasic' },
+            { label: 'Build: Web Output (Advanced)', command: 'extension.disposableWebOut' },
             { label: 'Test: Run Web Server', command: 'extension.disposableWebRun' },
         ];
         const selected = await vscode.window.showQuickPick(options, { placeHolder: 'Choose an option' });
@@ -98,7 +99,8 @@ function activate(context) {
                     if (content.includes("macroquad") && !content.includes("[features]")) {
                         // Cargo.toml exists and has macroquad dependency but no features section yet
                         // Append the features section and wasm32-specific dependencies
-                        const additionalContent = '\n[features]\nscale = []\ndefault = []\n\n[target.\'cfg(target_arch = "wasm32")\'.dependencies]\nwasm-bindgen = "0.2"\n';
+                        //const additionalContent = '\n[features]\nscale = []\ndefault = []\n\n[target.\'cfg(target_arch = "wasm32")\'.dependencies]\nwasm-bindgen = "0.2"\n';
+                        const additionalContent = '\n[features]\nscale = []\ndefault = []\n';
                         fs.appendFileSync(cargoTomlPath, additionalContent);
                         // console.log('Added features section to Cargo.toml');
 
@@ -144,8 +146,6 @@ Program Details: <Program Description Here>
 */
 
 mod modules;
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
 
 use macroquad::prelude::*;
 
@@ -399,6 +399,95 @@ async fn main() {
         } else {
             vscode.window.showWarningMessage(`Web build completed but patching failed. Check the JavaScript file manually.`);
         }
+
+    });
+
+    let disposableWebOutBasic = vscode.commands.registerCommand('extension.disposableWebOutBasic', async () => {
+
+        const folderPath = await getFolderPath();
+
+        if (!folderPath) {
+            vscode.window.showErrorMessage('No folder is open. Please open a folder first.');
+            return;
+        }
+
+        // Use addWebSupport to create basic HTML file
+        const lastFolderName = path.basename(folderPath);
+        const indexHtmlContent = `
+        <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>${lastFolderName}</title>
+            <style>
+                 /* === MODE 1: Responsive fullscreen canvas (default) === */
+        html,body,canvas {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: black;
+        }
+
+        /* === MODE 2: Fixed-size centered canvas (uncomment to use) === */
+        /*
+        body {
+            margin: 0;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        canvas {
+            width: 1024px;
+            height: 768px;
+            background: black;
+        }
+
+        html {
+            overflow: hidden;
+        }
+        */
+            </style>
+        </head>
+        <body>
+            <canvas id="glcanvas" tabindex='1'></canvas>
+            <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
+            <script>load("pkg/${lastFolderName}.wasm");</script>
+        </body>
+        </html>
+        `;
+
+        fs.writeFileSync(path.join(folderPath, 'index.html'), indexHtmlContent);
+
+        let terminal = getOrCreateTerminal("Cargo Terminal");
+        terminal.show();
+
+        // Define the command to build the project
+        const buildCommand = "cargo build --release --target wasm32-unknown-unknown";
+
+        // Run the build command and wait for it to complete
+        terminal.sendText(buildCommand);
+        
+        try {
+            await waitForBuildOutput(folderPath, "wasm32-unknown-unknown", ".wasm");
+        } catch (error) {
+            vscode.window.showErrorMessage(`Build failed: ${error.message}`);
+            return;
+        }
+
+        // Now that the build is complete, move the files
+        const pkgFolder = path.join(folderPath, "pkg");
+        const binaryName = path.basename(folderPath) + ".wasm";
+        const releaseBinary = path.join(folderPath, "target", "wasm32-unknown-unknown", "release", binaryName);
+
+        moveBuildOutput(pkgFolder, releaseBinary, binaryName, folderPath);
+        
+        vscode.window.showInformationMessage(`Basic web build completed! Files are ready in the pkg folder.`);
+        terminal.sendText('echo "📁 Basic web output files available in the pkg folder"');
 
     });
 
@@ -668,6 +757,7 @@ async fn main() {
         disposableMessageBoxCreate,
         disposableButtons,
         disposableWebOut,
+        disposableWebOutBasic,
         disposableWebRun,
         disposableCargoRun,
         disposableNativeOut,
